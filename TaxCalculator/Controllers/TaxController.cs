@@ -12,18 +12,20 @@ namespace TaxCalculator.Controllers
     [ApiController]
     public class TaxController : ControllerBase
     {
-        private readonly IPostalRepository _postalRepository;
-        public TaxController(IPostalRepository postalRepository)
+        private readonly ITaxCalculatorRepository _taxCalculatorRepository;
+        public TaxController(ITaxCalculatorRepository taxCalculatorRepository)
         {
-            _postalRepository = postalRepository;
+            _taxCalculatorRepository = taxCalculatorRepository;
         }
 
         [HttpGet]
         [Route("get-all")]
         public async Task<IActionResult> GetAllPostalLookupsAsync()
         {
-            var result = await _postalRepository.GetAllPostalLookupsAsync();
+            var result = await _taxCalculatorRepository.GetAllPostalLookupsAsync();
             return Ok(result);
         }
+
+
     }
 }

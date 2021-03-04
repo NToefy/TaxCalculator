@@ -24,7 +24,7 @@ namespace TaxCalculator
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddScoped<IPostalRepository, PostalRepository>();
+            services.AddScoped<ITaxCalculatorRepository, TaxCalculatorRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

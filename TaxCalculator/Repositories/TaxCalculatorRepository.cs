@@ -10,7 +10,7 @@ using TaxCalculator.Models;
 
 namespace TaxCalculator.Repositories
 {
-    public class PostalRepository: IPostalRepository
+    public class TaxCalculatorRepository : ITaxCalculatorRepository
     {
         private string DBContextConnection = string.Empty;
 
@@ -23,7 +23,7 @@ namespace TaxCalculator.Repositories
             }
         }
 
-        public PostalRepository(IConfiguration configuration)
+        public TaxCalculatorRepository(IConfiguration configuration)
         {
             DBContextConnection = configuration.GetConnectionString("DBContextConnection");
         }

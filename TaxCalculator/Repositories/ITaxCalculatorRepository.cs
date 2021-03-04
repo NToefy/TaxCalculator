@@ -6,7 +6,7 @@ using TaxCalculator.Models;
 
 namespace TaxCalculator.Repositories
 {
-    public interface IPostalRepository
+    public interface ITaxCalculatorRepository
     {
         Task<List<PostalLookupDTO>> GetAllPostalLookupsAsync();
     }
