@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TaxCalculator.Repositories;
 using System.Text.Json;
+using TaxCalculator.Models;
 
 namespace TaxCalculator.Controllers
 {
@@ -46,10 +47,10 @@ namespace TaxCalculator.Controllers
 
         [HttpPost]
         [Route("get-rate-lookup-item-by-id")]
-        public async Task<IActionResult> GetTaxRateDescriptorByPostalCodeAsync([FromBody] JToken requestData)
+        public async Task<IActionResult> GetTaxRateDescriptorByPostalCodeAsync([FromBody] ParamTestDTO requestData)
         {
-            var postalCode = requestData["input"].ToObject<string>();
-            //var postalCode = requestData;
+            //var postalCode = requestData["input"].ToObject<string>();
+            var postalCode = requestData.postalCode;
 
             var result = await _taxCalculatorRepository.GetTaxRateDescriptorByPostalCodeAsync(postalCode);
             return Ok(result);

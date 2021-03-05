@@ -9,6 +9,7 @@ using TaxCalculator.Models;
 using System.Web;
 using RestSharp;
 using Nancy.Json;
+using Newtonsoft.Json;
 
 namespace TaxCalculator.Controllers
 {
@@ -51,8 +52,10 @@ namespace TaxCalculator.Controllers
             decimal taxValue = 0;
 
             string url = "http://localhost:49991/api/Tax";
-            var input = new { postalCode = postalCode };
+            var input = new ParamTestDTO { postalCode = postalCode };
             //var input = postalCode;
+
+            
 
             var restClient = new RestClient()
             {
@@ -61,26 +64,28 @@ namespace TaxCalculator.Controllers
             };
 
 
-            //var jsonbody = new JavaScriptSerializer().Serialize(input);
+            var jsonbody = new JavaScriptSerializer().Serialize(input);
 
-            //var restRequest = new RestRequest();
+            var restRequest = new RestRequest();
 
-            //restRequest.Method = Method.POST;
-            //restRequest.AddHeader("Cache-Control", "no-cache");
-            //restRequest.AddHeader("Content-Type", @"application/json");
-            //restRequest.Resource = "get-rate-lookup-item-by-id";
-            //restRequest.AddJsonBody(jsonbody);
+            restRequest.Method = Method.POST;
+            restRequest.AddHeader("Cache-Control", "no-cache");
+            restRequest.AddHeader("Content-Type", @"application/json");
+            restRequest.Resource = "get-rate-lookup-item-by-id";
+            restRequest.AddJsonBody(input);
 
-            var baseUrl = "http://localhost:49991/api/Tax";
-            var client = new RestClient(baseUrl);
-            var request = new RestRequest("/get-rate-lookup-item-by-id", Method.POST);
-            request.AddHeader("Content-Type", @"application/json");
-            request.RequestFormat = DataFormat.Json;
-            request.AddParameter("Application/Json", input, ParameterType.RequestBody);
+            var response = restClient.Execute<string>(restRequest);
 
-            var response = client.Execute(request);
+            //var baseUrl = "http://localhost:49991/api/Tax";
+            //var client = new RestClient(baseUrl);
+            //var request = new RestRequest("/get-rate-lookup-item-by-id", Method.POST);
+            //request.AddHeader("Content-Type", @"application/json");
+            //request.RequestFormat = DataFormat.Json;
+            //request.AddParameter("Application/Json", input, ParameterType.RequestBody);
 
-            //var response = restClient.Execute<RateLookupDTO>(restRequest);
+            //var response = client.Execute(request);
+
+
 
             //string taxDescriptor = _taxController.ControllerContext.
 

@@ -11,6 +11,6 @@ namespace TaxCalculator.Repositories
         Task<List<PostalLookupDTO>> GetAllPostalLookupsAsync();
         Task<List<RateLookupDTO>> GetAllRateLookupsAsync();
         Task<TaxModelDTO> GetAllRateAndPostalLookupsAsync();
-        Task<RateLookupDTO> GetTaxRateDescriptorByPostalCodeAsync(string postalCode);
+        Task<PostalLookupDTO> GetTaxRateDescriptorByPostalCodeAsync(string postalCode);
     }
 }

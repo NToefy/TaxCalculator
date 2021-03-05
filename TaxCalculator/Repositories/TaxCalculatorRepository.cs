@@ -66,13 +66,13 @@ namespace TaxCalculator.Repositories
             }
         }
 
-        public async Task<RateLookupDTO> GetTaxRateDescriptorByPostalCodeAsync(string postalCode)
+        public async Task<PostalLookupDTO> GetTaxRateDescriptorByPostalCodeAsync(string postalCode)
         {
             using (IDbConnection conn = Connection)
             {
                 string query = "SELECT * FROM PostalLookup WHERE PostalCode = @postalCode";
-                RateLookupDTO rateLookup = await conn.QueryFirstOrDefaultAsync<RateLookupDTO>(sql: query, param: new { postalCode });
-                return rateLookup;
+                PostalLookupDTO postalLookup = await conn.QueryFirstOrDefaultAsync<PostalLookupDTO>(sql: query, param: new { postalCode });
+                return postalLookup;
             }
         }
     }
