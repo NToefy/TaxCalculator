@@ -37,5 +37,33 @@ namespace TaxCalculator.Repositories
                 return postalLookups;
             }
         }
+
+        public async Task<List<RateLookupDTO>> GetAllRateLookupsAsync()
+        {
+            using (IDbConnection conn = Connection)
+            {
+                string query = "SELECT * FROM RateLookup";
+                List<RateLookupDTO> rateLookups = (await conn.QueryAsync<RateLookupDTO>(sql: query)).ToList();
+                return rateLookups;
+            }
+        }
+
+        public async Task<TaxModelDTO> GetAllRateAndPostalLookupsAsync()
+        {
+            using (IDbConnection conn = Connection)
+            {
+                string query = @"
+				SELECT * FROM PostalLookup
+                SELECT * FROM RateLookup";
+
+                var reader = await conn.QueryMultipleAsync(sql: query);
+
+                return new TaxModelDTO
+                {
+                    postalLookups = (await reader.ReadAsync<PostalLookupDTO>()).ToList(),
+                    rateLookups = (await reader.ReadAsync<RateLookupDTO>()).ToList()
+                };
+            }
+        }
     }
 }

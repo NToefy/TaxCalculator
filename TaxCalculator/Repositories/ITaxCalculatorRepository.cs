@@ -9,5 +9,7 @@ namespace TaxCalculator.Repositories
     public interface ITaxCalculatorRepository
     {
         Task<List<PostalLookupDTO>> GetAllPostalLookupsAsync();
+        Task<List<RateLookupDTO>> GetAllRateLookupsAsync();
+        Task<TaxModelDTO> GetAllRateAndPostalLookupsAsync();
     }
 }

@@ -19,13 +19,28 @@ namespace TaxCalculator.Controllers
         }
 
         [HttpGet]
-        [Route("get-all")]
+        [Route("get-all-postal-lookups")]
         public async Task<IActionResult> GetAllPostalLookupsAsync()
         {
             var result = await _taxCalculatorRepository.GetAllPostalLookupsAsync();
             return Ok(result);
         }
 
+        [HttpGet]
+        [Route("get-all-rate-lookups")]
+        public async Task<IActionResult> GetAllRateLookupsAsync()
+        {
+            var result = await _taxCalculatorRepository.GetAllRateLookupsAsync();
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("get-all-lookups")]
+        public async Task<IActionResult> GetAllRateAndPostalLookupsAsync()
+        {
+            var result = await _taxCalculatorRepository.GetAllRateAndPostalLookupsAsync();
+            return Ok(result);
+        }
 
     }
 }
