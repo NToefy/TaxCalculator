@@ -75,5 +75,15 @@ namespace TaxCalculator.Repositories
                 return postalLookup;
             }
         }
+
+        public async Task<ResponseDTO> CalculateTaxAsync(string postalCode, decimal annualIncome)
+        {
+            ResponseDTO response = new ResponseDTO();
+
+            var postalCodeRecord = GetTaxRateDescriptorByPostalCodeAsync(postalCode);
+            var postalCodeDescriptor = postalCodeRecord.Result.TaxCalculationDescriptor;
+
+            return response;
+        }
     }
 }

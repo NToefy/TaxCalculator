@@ -56,5 +56,17 @@ namespace TaxCalculator.Controllers
             return Ok(result);
         }
 
+        [HttpPost]
+        [Route("CalcTaxBasedOnIncome")]
+        public async Task<IActionResult> GetTaxBasedOnIncomeAsync([FromBody] PostParamsDTO requestData)
+        {
+            //var postalCode = requestData["input"].ToObject<string>();
+            var postalCode = requestData.postalCode;
+            var annualIncome = requestData.annualIncome;
+
+            var result = await _taxCalculatorRepository.CalculateTaxAsync(postalCode, annualIncome);
+            return Ok(result);
+        }
+
     }
 }

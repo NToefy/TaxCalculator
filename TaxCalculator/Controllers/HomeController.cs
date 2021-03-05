@@ -52,9 +52,11 @@ namespace TaxCalculator.Controllers
             decimal taxValue = 0;
 
             string url = "http://localhost:49991/api/Tax";
-            var input = new ParamTestDTO { postalCode = postalCode };
-            //var input = postalCode;
 
+            var input = new PostParamsDTO { 
+                postalCode = postalCode, 
+                annualIncome = annualIncome
+            };
             
 
             var restClient = new RestClient()
@@ -71,23 +73,12 @@ namespace TaxCalculator.Controllers
             restRequest.Method = Method.POST;
             restRequest.AddHeader("Cache-Control", "no-cache");
             restRequest.AddHeader("Content-Type", @"application/json");
-            restRequest.Resource = "get-rate-lookup-item-by-id";
+            restRequest.Resource = "CalcTaxBasedOnIncome";
             restRequest.AddJsonBody(input);
 
             var response = restClient.Execute<string>(restRequest);
 
-            //var baseUrl = "http://localhost:49991/api/Tax";
-            //var client = new RestClient(baseUrl);
-            //var request = new RestRequest("/get-rate-lookup-item-by-id", Method.POST);
-            //request.AddHeader("Content-Type", @"application/json");
-            //request.RequestFormat = DataFormat.Json;
-            //request.AddParameter("Application/Json", input, ParameterType.RequestBody);
-
-            //var response = client.Execute(request);
-
-
-
-            //string taxDescriptor = _taxController.ControllerContext.
+            
 
             ViewBag.Values = string.Format("Values: {0} {1}", postalCode, annualIncome);
             return View("Index");
