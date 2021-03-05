@@ -23,6 +23,30 @@ namespace TaxCalculator.Controllers
             return View();
         }
 
+        [HttpPost]
+        public IActionResult Index(string firstName, string lastName)
+        {
+            ViewBag.Name = string.Format("Name: {0} {1}", firstName, lastName);
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult CalculateTax(string postalCode, decimal annualIncome)
+        {
+            // Get values from form
+
+            // Validate values
+
+            // Include Exception handling
+
+            // Get postalLookup data based on postal code. pass through postal code to lookup. Not get all
+
+            // Get full lookup from rates lookup. Calculation to be based on all rows of rates lookup
+
+            ViewBag.Values = string.Format("Values: {0} {1}", postalCode, annualIncome);
+            return View("Index");
+        }
+
         public IActionResult Privacy()
         {
             return View();
