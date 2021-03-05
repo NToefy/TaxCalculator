@@ -9,5 +9,7 @@ namespace TaxCalculator.Models
     {
         public string status { get; set; }
         public string message { get; set; }
+        public decimal taxValue { get; set; }
+        public string typeOfCalculation { get; set; }
     }
 }

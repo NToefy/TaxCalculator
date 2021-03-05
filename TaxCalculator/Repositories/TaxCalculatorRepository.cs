@@ -79,11 +79,80 @@ namespace TaxCalculator.Repositories
         public async Task<ResponseDTO> CalculateTaxAsync(string postalCode, decimal annualIncome)
         {
             ResponseDTO response = new ResponseDTO();
+            decimal taxToPay = 0;
 
-            var postalCodeRecord = GetTaxRateDescriptorByPostalCodeAsync(postalCode);
-            var postalCodeDescriptor = postalCodeRecord.Result.TaxCalculationDescriptor;
+            var postalCodeRecord = await GetTaxRateDescriptorByPostalCodeAsync(postalCode);
+            string postalCodeDescriptor = postalCodeRecord == null ? string.Empty : postalCodeRecord.TaxCalculationDescriptor;
+
+            if (string.IsNullOrEmpty(postalCodeDescriptor))
+            {
+                response.status = "Incomplete";
+                response.message = "Postal code does not exist in reference data.";
+                return response;
+            }
+
+            var rateTableData = await GetAllRateLookupsAsync();
+
+            if (rateTableData != null)
+            {
+                switch (postalCodeDescriptor)
+                {
+                    case "FR":
+                        decimal calPercFR = 0.175M;
+                        taxToPay = annualIncome * calPercFR;
+
+                        response.status = "success";
+                        response.message = "Tax calculation performed successfully.";
+                        response.taxValue = taxToPay;
+                        response.typeOfCalculation = "Flat Rate";
+
+                        // Write to the database
+
+                        CalculationsResultDTO calcResult = new CalculationsResultDTO
+                        {
+                            PostalCode = postalCode,
+                            AnnualIncome = annualIncome,
+                            DateSubmitted = DateTime.Now,
+                            CalculatedTax = taxToPay,
+                            CalculationType = "Flat Rate"
+                        };
+
+                        var result = await SaveTaxResultAsync(calcResult);
+                        
+
+
+                        break;
+                    case "FV":
+                        // code block
+                        break;
+                    case "P":
+                        // code block
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                response.status = "Incomplete";
+                response.message = "Rate Table not populated. Tax calculation cannot be performed.";
+                return response;
+            }
 
             return response;
+        }
+
+        public async Task<int> SaveTaxResultAsync(CalculationsResultDTO calcResult)
+        {
+            using (IDbConnection conn = Connection)
+            {
+                string command = @"
+				INSERT INTO TaxCalculationsResult([PostalCode], [AnnualIncome], [DateSubmitted], [CalculatedTax], [CalculationType])
+				VALUES(@PostalCode, @AnnualIncome, @DateSubmitted, @CalculatedTax, @CalculationType)";
+
+                var result = await conn.ExecuteAsync(sql: command, param: calcResult);
+                return result;
+            }
         }
     }
 }
