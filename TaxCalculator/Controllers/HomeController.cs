@@ -6,6 +6,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using TaxCalculator.Models;
+using System.Web;
+using RestSharp;
+using Nancy.Json;
 
 namespace TaxCalculator.Controllers
 {
@@ -39,9 +42,47 @@ namespace TaxCalculator.Controllers
 
             // Include Exception handling
 
+            // Set initial value
+
             // Get postalLookup data based on postal code. pass through postal code to lookup. Not get all
 
             // Get full lookup from rates lookup. Calculation to be based on all rows of rates lookup
+
+            decimal taxValue = 0;
+
+            string url = "http://localhost:49991/api/Tax";
+            var input = new { postalCode = postalCode };
+            //var input = postalCode;
+
+            var restClient = new RestClient()
+            {
+                BaseUrl = new Uri(url),
+                Timeout = 45000
+            };
+
+
+            //var jsonbody = new JavaScriptSerializer().Serialize(input);
+
+            //var restRequest = new RestRequest();
+
+            //restRequest.Method = Method.POST;
+            //restRequest.AddHeader("Cache-Control", "no-cache");
+            //restRequest.AddHeader("Content-Type", @"application/json");
+            //restRequest.Resource = "get-rate-lookup-item-by-id";
+            //restRequest.AddJsonBody(jsonbody);
+
+            var baseUrl = "http://localhost:49991/api/Tax";
+            var client = new RestClient(baseUrl);
+            var request = new RestRequest("/get-rate-lookup-item-by-id", Method.POST);
+            request.AddHeader("Content-Type", @"application/json");
+            request.RequestFormat = DataFormat.Json;
+            request.AddParameter("Application/Json", input, ParameterType.RequestBody);
+
+            var response = client.Execute(request);
+
+            //var response = restClient.Execute<RateLookupDTO>(restRequest);
+
+            //string taxDescriptor = _taxController.ControllerContext.
 
             ViewBag.Values = string.Format("Values: {0} {1}", postalCode, annualIncome);
             return View("Index");

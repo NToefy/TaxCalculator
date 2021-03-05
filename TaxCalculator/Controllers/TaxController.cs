@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TaxCalculator.Repositories;
+using System.Text.Json;
 
 namespace TaxCalculator.Controllers
 {
@@ -42,7 +44,16 @@ namespace TaxCalculator.Controllers
             return Ok(result);
         }
 
-        
+        [HttpPost]
+        [Route("get-rate-lookup-item-by-id")]
+        public async Task<IActionResult> GetTaxRateDescriptorByPostalCodeAsync([FromBody] JToken requestData)
+        {
+            var postalCode = requestData["input"].ToObject<string>();
+            //var postalCode = requestData;
+
+            var result = await _taxCalculatorRepository.GetTaxRateDescriptorByPostalCodeAsync(postalCode);
+            return Ok(result);
+        }
 
     }
 }
