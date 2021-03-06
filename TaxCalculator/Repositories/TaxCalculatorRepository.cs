@@ -249,7 +249,7 @@ namespace TaxCalculator.Repositories
             if (annualIncome > toValue)
             {
                 // Calculate Tax For Full Bracket
-                bracketAmount = toValue - fromValue;
+                bracketAmount = toValue - (fromValue == 0 ? 0 : (fromValue - 1));
                 bracketTaxAmount = bracketAmount * rateCalValue;
 
                 taxToPayCalculated = (decimal)(taxToPayCalculated + bracketTaxAmount);
@@ -257,6 +257,15 @@ namespace TaxCalculator.Repositories
             }
 
             if (annualIncome >= fromValue && annualIncome <= toValue)
+            {
+                bracketAmount = annualIncome - (fromValue == 0 ? 0 : (fromValue - 1));
+                bracketTaxAmount = bracketAmount * rateCalValue;
+
+                taxToPayCalculated = (decimal)(taxToPayCalculated + bracketTaxAmount);
+                return taxToPayCalculated;
+            }
+
+            if (toValue == null)
             {
                 bracketAmount = annualIncome - (fromValue == 0 ? 0 : (fromValue - 1));
                 bracketTaxAmount = bracketAmount * rateCalValue;
