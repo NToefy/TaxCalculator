@@ -49,7 +49,7 @@ namespace TaxCalculator.Controllers
         [Route("get-rate-lookup-item-by-id")]
         public async Task<IActionResult> GetTaxRateDescriptorByPostalCodeAsync([FromBody] ParamTestDTO requestData)
         {
-            //var postalCode = requestData["input"].ToObject<string>();
+
             var postalCode = requestData.postalCode;
 
             var result = await _taxCalculatorRepository.GetTaxRateDescriptorByPostalCodeAsync(postalCode);

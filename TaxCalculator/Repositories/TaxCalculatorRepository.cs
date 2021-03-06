@@ -42,6 +42,7 @@ namespace TaxCalculator.Repositories
         {
             using (IDbConnection conn = Connection)
             {
+                //string query = "SELECT * FROM RateLookup1";
                 string query = "SELECT * FROM RateLookup";
                 List<RateLookupDTO> rateLookups = (await conn.QueryAsync<RateLookupDTO>(sql: query)).ToList();
                 return rateLookups;

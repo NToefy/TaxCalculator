@@ -10,6 +10,7 @@ using System.Web;
 using RestSharp;
 using Nancy.Json;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace TaxCalculator.Controllers
 {
@@ -36,6 +37,7 @@ namespace TaxCalculator.Controllers
 
         [HttpPost]
         public IActionResult CalculateTax(string postalCode, decimal annualIncome)
+        //public IActionResult CalculateTax([FromBody] PostParamsDTO requestData)
         {
             // Get values from form
 
@@ -49,24 +51,28 @@ namespace TaxCalculator.Controllers
 
             // Get full lookup from rates lookup. Calculation to be based on all rows of rates lookup
 
+            //var postalCode = requestData.postalCode;
+            //var annualIncome = requestData.annualIncome;
+
+            //var postalCode = requestData.Value<string>("postalCode");
+            //var annualIncome = requestData.Value<decimal>("annualIncome");
+
             decimal taxValue = 0;
 
             string url = "http://localhost:49991/api/Tax";
 
-            var input = new PostParamsDTO { 
-                postalCode = postalCode, 
+            var input = new PostParamsDTO
+            {
+                postalCode = postalCode,
                 annualIncome = annualIncome
             };
-            
+
 
             var restClient = new RestClient()
             {
                 BaseUrl = new Uri(url),
                 Timeout = 45000
             };
-
-
-            //var jsonbody = new JavaScriptSerializer().Serialize(input);
 
             var restRequest = new RestRequest();
 
@@ -80,8 +86,6 @@ namespace TaxCalculator.Controllers
 
             ResponseDTO responseVal = JsonConvert.DeserializeObject<ResponseDTO>(response.Content);
 
-
-            //ViewBag.Values = string.Format("Values: Status : {0}  Message : {1}  Tax Value : {2}  Type Of Calculation : {3} ", responseVal.status, responseVal.message, responseVal.taxValue, responseVal.typeOfCalculation == null ? "None" : responseVal.typeOfCalculation);
             ViewBag.PostalCode = string.Format("Postal Code : {0}", string.IsNullOrEmpty(postalCode) == true ? "None" : postalCode);
             ViewBag.AnnualIncome = string.Format("Annual Income : {0}", annualIncome);
             ViewBag.Status = string.Format("Status : {0}", responseVal.status);
