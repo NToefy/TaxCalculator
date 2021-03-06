@@ -123,7 +123,48 @@ namespace TaxCalculator.Repositories
 
                         break;
                     case "FV":
-                        // code block
+                        decimal calPercFV = 0.05M;
+
+                        if (annualIncome > 0 && annualIncome < 200000)
+                        {
+                            taxToPay = annualIncome * calPercFV;
+                        }
+                        else
+                        {
+                            taxToPay = 10000;
+                        }
+
+
+                        
+
+                        // Write to the database
+
+                        CalculationsResultDTO calcResultFV = new CalculationsResultDTO
+                        {
+                            PostalCode = postalCode,
+                            AnnualIncome = annualIncome,
+                            DateSubmitted = DateTime.Now,
+                            CalculatedTax = taxToPay,
+                            CalculationType = "Flat Value"
+                        };
+
+                        var resultFV = await SaveTaxResultAsync(calcResultFV);
+
+                        if (resultFV == 1)
+                        {
+                            response.status = "success";
+                            response.message = "Tax calculation performed successfully.";
+                            response.taxValue = taxToPay;
+                            response.typeOfCalculation = "Flat Value";
+                        }
+                        else
+                        {
+                            response.status = "error";
+                            response.message = "Error saving result to the database.";
+                            response.taxValue = taxToPay;
+                            response.typeOfCalculation = "Flat Value";
+                        }
+
                         break;
                     case "P":
                         // code block
