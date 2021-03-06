@@ -91,10 +91,8 @@ namespace TaxCalculator.Repositories
                 return response;
             }
 
-            var rateTableData = await GetAllRateLookupsAsync();
-
-            if (rateTableData != null)
-            {
+            
+            
                 switch (postalCodeDescriptor)
                 {
                     case "FR":
@@ -167,18 +165,64 @@ namespace TaxCalculator.Repositories
 
                         break;
                     case "P":
-                        // code block
-                        break;
+                        var rateTableData = await GetAllRateLookupsAsync();
+                        if (rateTableData != null)
+                        {
+                            decimal tempTaxCalculated = 0;
+                                
+                            foreach (var bracket in rateTableData)
+                            {
+                                decimal? fromValue = bracket.FromLimit;
+                                decimal? toValue = bracket.ToLimit;
+                                decimal? calcRate = bracket.RateCalcVal;
+
+                                tempTaxCalculated += CalculateTaxPerBracket(annualIncome, fromValue, toValue, calcRate);
+                                
+                            }
+
+                            taxToPay = tempTaxCalculated;
+                            
+                            // Write to the database
+
+                            CalculationsResultDTO calcResultP = new CalculationsResultDTO
+                            {
+                                PostalCode = postalCode,
+                                AnnualIncome = annualIncome,
+                                DateSubmitted = DateTime.Now,
+                                CalculatedTax = taxToPay,
+                                CalculationType = "Progressive"
+                            };
+
+                            var resultP = await SaveTaxResultAsync(calcResultP);
+
+                            if (resultP == 1)
+                            {
+                                response.status = "success";
+                                response.message = "Tax calculation performed successfully.";
+                                response.taxValue = taxToPay;
+                                response.typeOfCalculation = "Progressive";
+                            }
+                            else
+                            {
+                                response.status = "error";
+                                response.message = "Error saving result to the database.";
+                                response.taxValue = taxToPay;
+                                response.typeOfCalculation = "Progressive";
+                            }
+
+                        }
+                        else
+                        {
+                            response.status = "Incomplete";
+                            response.message = "Rate Table not populated. Tax calculation cannot be performed.";
+                            return response;
+                        }
+
+                    break;
                     default:
                         break;
                 }
-            }
-            else
-            {
-                response.status = "Incomplete";
-                response.message = "Rate Table not populated. Tax calculation cannot be performed.";
-                return response;
-            }
+           
 
             return response;
         }
@@ -194,6 +238,35 @@ namespace TaxCalculator.Repositories
                 var result = await conn.ExecuteAsync(sql: command, param: calcResult);
                 return result;
             }
+        }
+
+        public decimal CalculateTaxPerBracket(decimal annualIncome, decimal? fromValue, decimal? toValue, decimal? rateCalValue)
+        {
+            decimal taxToPayCalculated = 0;
+            decimal? bracketAmount = 0;
+            decimal? bracketTaxAmount = 0;
+
+            if (annualIncome > toValue)
+            {
+                // Calculate Tax For Full Bracket
+                bracketAmount = toValue - fromValue;
+                bracketTaxAmount = bracketAmount * rateCalValue;
+
+                taxToPayCalculated = (decimal)(taxToPayCalculated + bracketTaxAmount);
+                return taxToPayCalculated;
+            }
+
+            if (annualIncome >= fromValue && annualIncome <= toValue)
+            {
+                bracketAmount = annualIncome - (fromValue == 0 ? 0 : (fromValue - 1));
+                bracketTaxAmount = bracketAmount * rateCalValue;
+
+                taxToPayCalculated = (decimal)(taxToPayCalculated + bracketTaxAmount);
+                return taxToPayCalculated;
+            }
+
+
+            return taxToPayCalculated;
         }
     }
 }
