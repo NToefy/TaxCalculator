@@ -265,7 +265,7 @@ namespace TaxCalculator.Repositories
                 return taxToPayCalculated;
             }
 
-            if (toValue == null)
+            if (toValue == null && annualIncome >= fromValue)
             {
                 bracketAmount = annualIncome - (fromValue == 0 ? 0 : (fromValue - 1));
                 bracketTaxAmount = bracketAmount * rateCalValue;

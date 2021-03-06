@@ -66,7 +66,7 @@ namespace TaxCalculator.Controllers
             };
 
 
-            var jsonbody = new JavaScriptSerializer().Serialize(input);
+            //var jsonbody = new JavaScriptSerializer().Serialize(input);
 
             var restRequest = new RestRequest();
 
@@ -78,9 +78,10 @@ namespace TaxCalculator.Controllers
 
             var response = restClient.Execute<string>(restRequest);
 
+            ResponseDTO responseVal = JsonConvert.DeserializeObject<ResponseDTO>(response.Content);
             
 
-            ViewBag.Values = string.Format("Values: {0} {1}", postalCode, annualIncome);
+            ViewBag.Values = string.Format("Values: Status : {0}  Message : {1}  Tax Value : {2}  Type Of Calculation : {3} ", responseVal.status, responseVal.message, responseVal.taxValue, responseVal.typeOfCalculation);
             return View("Index");
         }
 
