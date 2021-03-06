@@ -56,43 +56,52 @@ namespace TaxCalculator.Controllers
 
             //var postalCode = requestData.Value<string>("postalCode");
             //var annualIncome = requestData.Value<decimal>("annualIncome");
-
-            decimal taxValue = 0;
-
-            string url = "http://localhost:49991/api/Tax";
-
-            var input = new PostParamsDTO
+            try
             {
-                postalCode = postalCode,
-                annualIncome = annualIncome
-            };
+                string url = "http://localhost:49991/api/Tax";
+
+                var input = new PostParamsDTO
+                {
+                    postalCode = postalCode,
+                    annualIncome = annualIncome
+                };
 
 
-            var restClient = new RestClient()
+                var restClient = new RestClient()
+                {
+                    BaseUrl = new Uri(url),
+                    Timeout = 45000
+                };
+
+                var restRequest = new RestRequest();
+
+                restRequest.Method = Method.POST;
+                restRequest.AddHeader("Cache-Control", "no-cache");
+                restRequest.AddHeader("Content-Type", @"application/json");
+                restRequest.Resource = "CalcTaxBasedOnIncome";
+                restRequest.AddJsonBody(input);
+
+                var response = restClient.Execute<string>(restRequest);
+
+                ResponseDTO responseVal = JsonConvert.DeserializeObject<ResponseDTO>(response.Content);
+
+                ViewBag.PostalCode = string.Format("Postal Code : {0}", string.IsNullOrEmpty(postalCode) == true ? "None" : postalCode);
+                ViewBag.AnnualIncome = string.Format("Annual Income : {0}", annualIncome);
+                ViewBag.Status = string.Format("Status : {0}", responseVal.status);
+                ViewBag.Message = string.Format("Message : {0}", responseVal.message);
+                ViewBag.TaxValue = string.Format("Tax Value : {0}", responseVal.taxValue);
+                ViewBag.CalcType = string.Format("Type Of Calculation : {0}", responseVal.typeOfCalculation ?? "None");
+                return View("Index");
+            }
+            catch (Exception ex)
             {
-                BaseUrl = new Uri(url),
-                Timeout = 45000
-            };
+                ViewBag.Status = string.Format("Status : {0}", "Incomplete");
+                ViewBag.Message = string.Format("Message : {0}", ex.Message);
+                return View("Index");
+                //return Json(new { Success = false, Message = ex.Message });
+            }
 
-            var restRequest = new RestRequest();
-
-            restRequest.Method = Method.POST;
-            restRequest.AddHeader("Cache-Control", "no-cache");
-            restRequest.AddHeader("Content-Type", @"application/json");
-            restRequest.Resource = "CalcTaxBasedOnIncome";
-            restRequest.AddJsonBody(input);
-
-            var response = restClient.Execute<string>(restRequest);
-
-            ResponseDTO responseVal = JsonConvert.DeserializeObject<ResponseDTO>(response.Content);
-
-            ViewBag.PostalCode = string.Format("Postal Code : {0}", string.IsNullOrEmpty(postalCode) == true ? "None" : postalCode);
-            ViewBag.AnnualIncome = string.Format("Annual Income : {0}", annualIncome);
-            ViewBag.Status = string.Format("Status : {0}", responseVal.status);
-            ViewBag.Message = string.Format("Message : {0}", responseVal.message);
-            ViewBag.TaxValue = string.Format("Tax Value : {0}", responseVal.taxValue);
-            ViewBag.CalcType = string.Format("Type Of Calculation : {0}", responseVal.typeOfCalculation ?? "None");
-            return View("Index");
+            
         }
 
         public IActionResult Privacy()

@@ -79,28 +79,30 @@ namespace TaxCalculator.Repositories
 
         public async Task<ResponseDTO> CalculateTaxAsync(string postalCode, decimal annualIncome)
         {
-            ResponseDTO response = new ResponseDTO();
-            decimal taxToPay = 0;
-
-            var postalCodeRecord = await GetTaxRateDescriptorByPostalCodeAsync(postalCode);
-            string postalCodeDescriptor = postalCodeRecord == null ? string.Empty : postalCodeRecord.TaxCalculationDescriptor;
-
-            if (string.IsNullOrEmpty(postalCodeDescriptor))
+            try
             {
-                response.status = "Incomplete";
-                response.message = "Postal code does not exist in reference data.";
-                return response;
-            }
+                ResponseDTO response = new ResponseDTO();
+                decimal taxToPay = 0;
 
-            
-            
+                var postalCodeRecord = await GetTaxRateDescriptorByPostalCodeAsync(postalCode);
+                string postalCodeDescriptor = postalCodeRecord == null ? string.Empty : postalCodeRecord.TaxCalculationDescriptor;
+
+                if (string.IsNullOrEmpty(postalCodeDescriptor))
+                {
+                    response.status = "Incomplete";
+                    response.message = "Postal code does not exist in reference data.";
+                    return response;
+                }
+
+
+
                 switch (postalCodeDescriptor)
                 {
                     case "FR":
                         decimal calPercFR = 0.175M;
                         taxToPay = annualIncome * calPercFR;
 
-                        
+
 
                         // Write to the database
 
@@ -131,7 +133,7 @@ namespace TaxCalculator.Repositories
                         }
 
 
-                    break;
+                        break;
                     case "FV":
                         decimal calPercFV = 0.05M;
 
@@ -145,7 +147,7 @@ namespace TaxCalculator.Repositories
                         }
 
 
-                        
+
 
                         // Write to the database
 
@@ -181,7 +183,7 @@ namespace TaxCalculator.Repositories
                         if (rateTableData != null)
                         {
                             decimal tempTaxCalculated = 0;
-                                
+
                             foreach (var bracket in rateTableData)
                             {
                                 decimal? fromValue = bracket.FromLimit;
@@ -189,11 +191,11 @@ namespace TaxCalculator.Repositories
                                 decimal? calcRate = bracket.RateCalcVal;
 
                                 tempTaxCalculated += CalculateTaxPerBracket(annualIncome, fromValue, toValue, calcRate);
-                                
+
                             }
 
                             taxToPay = tempTaxCalculated;
-                            
+
                             // Write to the database
 
                             CalculationsResultDTO calcResultP = new CalculationsResultDTO
@@ -230,13 +232,26 @@ namespace TaxCalculator.Repositories
                             return response;
                         }
 
-                    break;
+                        break;
                     default:
                         break;
                 }
-           
 
-            return response;
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+
+                ResponseDTO responseError = new ResponseDTO();
+                responseError.status = "Error";
+                responseError.message = ex.Message;
+                responseError.taxValue = 0;
+                responseError.typeOfCalculation = "None";
+
+                return responseError;
+            }
+            
         }
 
         public async Task<int> SaveTaxResultAsync(CalculationsResultDTO calcResult)
