@@ -99,10 +99,7 @@ namespace TaxCalculator.Repositories
                         decimal calPercFR = 0.175M;
                         taxToPay = annualIncome * calPercFR;
 
-                        response.status = "success";
-                        response.message = "Tax calculation performed successfully.";
-                        response.taxValue = taxToPay;
-                        response.typeOfCalculation = "Flat Rate";
+                        
 
                         // Write to the database
 
@@ -116,10 +113,24 @@ namespace TaxCalculator.Repositories
                         };
 
                         var result = await SaveTaxResultAsync(calcResult);
-                        
+
+                        if (result == 1)
+                        {
+                            response.status = "success";
+                            response.message = "Tax calculation performed successfully.";
+                            response.taxValue = taxToPay;
+                            response.typeOfCalculation = "Flat Rate";
+                        }
+                        else
+                        {
+                            response.status = "error";
+                            response.message = "Error saving result to the database.";
+                            response.taxValue = taxToPay;
+                            response.typeOfCalculation = "Flat Rate";
+                        }
 
 
-                        break;
+                    break;
                     case "FV":
                         decimal calPercFV = 0.05M;
 

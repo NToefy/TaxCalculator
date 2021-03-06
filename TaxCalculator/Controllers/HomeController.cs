@@ -79,9 +79,15 @@ namespace TaxCalculator.Controllers
             var response = restClient.Execute<string>(restRequest);
 
             ResponseDTO responseVal = JsonConvert.DeserializeObject<ResponseDTO>(response.Content);
-            
 
-            ViewBag.Values = string.Format("Values: Status : {0}  Message : {1}  Tax Value : {2}  Type Of Calculation : {3} ", responseVal.status, responseVal.message, responseVal.taxValue, responseVal.typeOfCalculation);
+
+            //ViewBag.Values = string.Format("Values: Status : {0}  Message : {1}  Tax Value : {2}  Type Of Calculation : {3} ", responseVal.status, responseVal.message, responseVal.taxValue, responseVal.typeOfCalculation == null ? "None" : responseVal.typeOfCalculation);
+            ViewBag.PostalCode = string.Format("Postal Code : {0}", string.IsNullOrEmpty(postalCode) == true ? "None" : postalCode);
+            ViewBag.AnnualIncome = string.Format("Annual Income : {0}", annualIncome);
+            ViewBag.Status = string.Format("Status : {0}", responseVal.status);
+            ViewBag.Message = string.Format("Message : {0}", responseVal.message);
+            ViewBag.TaxValue = string.Format("Tax Value : {0}", responseVal.taxValue);
+            ViewBag.CalcType = string.Format("Type Of Calculation : {0}", responseVal.typeOfCalculation ?? "None");
             return View("Index");
         }
 

@@ -2,7 +2,7 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
+<div class="text-left">
     <html>
     <head>
         <meta name="viewport" content="width=device-width" />
@@ -25,7 +25,13 @@
                 </tr>
             </table>
             <hr />
-            @ViewBag.Values
+
+            @ViewBag.PostalCode <br />
+            @ViewBag.AnnualIncome <br />
+            @ViewBag.Status <br />
+            @ViewBag.Message <br />
+            @ViewBag.TaxValue <br />
+            @ViewBag.CalcType <br />
         </form>
     </body>
 </html>
