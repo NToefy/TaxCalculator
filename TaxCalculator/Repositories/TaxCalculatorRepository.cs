@@ -25,56 +25,102 @@ namespace TaxCalculator.Repositories
 
         public TaxCalculatorRepository(IConfiguration configuration)
         {
-            DBContextConnection = configuration.GetConnectionString("DBContextConnection");
+            try
+            {
+               //DBContextConnection = configuration.GetConnectionString("DBContextConnectio"); //Simulate incorrect connection
+                DBContextConnection = configuration.GetConnectionString("DBContextConnection");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
 
         public async Task<List<PostalLookupDTO>> GetAllPostalLookupsAsync()
         {
-            using (IDbConnection conn = Connection)
+            
+            try
             {
-                string query = "SELECT * FROM PostalLookup";
-                List<PostalLookupDTO> postalLookups = (await conn.QueryAsync<PostalLookupDTO>(sql: query)).ToList();
-                return postalLookups;
+                using (IDbConnection conn = Connection)
+                {
+                    string query = "SELECT * FROM PostalLookup";
+                    List<PostalLookupDTO> postalLookups = (await conn.QueryAsync<PostalLookupDTO>(sql: query)).ToList();
+                    return postalLookups;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
             }
         }
 
         public async Task<List<RateLookupDTO>> GetAllRateLookupsAsync()
         {
-            using (IDbConnection conn = Connection)
+            try
             {
-                //string query = "SELECT * FROM RateLookup1";
-                string query = "SELECT * FROM RateLookup";
-                List<RateLookupDTO> rateLookups = (await conn.QueryAsync<RateLookupDTO>(sql: query)).ToList();
-                return rateLookups;
+                using (IDbConnection conn = Connection)
+                {
+                    //string query = "SELECT * FROM RateLookup1"; // Simulate fail
+                    string query = "SELECT * FROM RateLookup";
+                    List<RateLookupDTO> rateLookups = (await conn.QueryAsync<RateLookupDTO>(sql: query)).ToList();
+                    return rateLookups;
+                }
             }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+            
         }
 
         public async Task<TaxModelDTO> GetAllRateAndPostalLookupsAsync()
         {
-            using (IDbConnection conn = Connection)
+            try
             {
-                string query = @"
-				SELECT * FROM PostalLookup
-                SELECT * FROM RateLookup";
-
-                var reader = await conn.QueryMultipleAsync(sql: query);
-
-                return new TaxModelDTO
+                using (IDbConnection conn = Connection)
                 {
-                    postalLookups = (await reader.ReadAsync<PostalLookupDTO>()).ToList(),
-                    rateLookups = (await reader.ReadAsync<RateLookupDTO>()).ToList()
-                };
+                    string query = @"
+				                    SELECT * FROM PostalLookup
+                                    SELECT * FROM RateLookup";
+
+                    var reader = await conn.QueryMultipleAsync(sql: query);
+
+                    return new TaxModelDTO
+                    {
+                        postalLookups = (await reader.ReadAsync<PostalLookupDTO>()).ToList(),
+                        rateLookups = (await reader.ReadAsync<RateLookupDTO>()).ToList()
+                    };
+                }
             }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
 
         public async Task<PostalLookupDTO> GetTaxRateDescriptorByPostalCodeAsync(string postalCode)
         {
-            using (IDbConnection conn = Connection)
+            try
             {
-                string query = "SELECT * FROM PostalLookup WHERE PostalCode = @postalCode";
-                PostalLookupDTO postalLookup = await conn.QueryFirstOrDefaultAsync<PostalLookupDTO>(sql: query, param: new { postalCode });
-                return postalLookup;
+                using (IDbConnection conn = Connection)
+                {
+                    string query = "SELECT * FROM PostalLookup WHERE PostalCode = @postalCode";
+                    PostalLookupDTO postalLookup = await conn.QueryFirstOrDefaultAsync<PostalLookupDTO>(sql: query, param: new { postalCode });
+                    return postalLookup;
+                }
             }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
 
         public async Task<ResponseDTO> CalculateTaxAsync(string postalCode, decimal annualIncome)
@@ -256,53 +302,71 @@ namespace TaxCalculator.Repositories
 
         public async Task<int> SaveTaxResultAsync(CalculationsResultDTO calcResult)
         {
-            using (IDbConnection conn = Connection)
+            try
             {
-                string command = @"
-				INSERT INTO TaxCalculationsResult([PostalCode], [AnnualIncome], [DateSubmitted], [CalculatedTax], [CalculationType])
-				VALUES(@PostalCode, @AnnualIncome, @DateSubmitted, @CalculatedTax, @CalculationType)";
+                using (IDbConnection conn = Connection)
+                {
+                    string command = @"
+				            INSERT INTO TaxCalculationsResult([PostalCode], [AnnualIncome], [DateSubmitted], [CalculatedTax], [CalculationType])
+				            VALUES(@PostalCode, @AnnualIncome, @DateSubmitted, @CalculatedTax, @CalculationType)";
 
-                var result = await conn.ExecuteAsync(sql: command, param: calcResult);
-                return result;
+                    var result = await conn.ExecuteAsync(sql: command, param: calcResult);
+                    return result;
+                }
             }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
 
         public decimal CalculateTaxPerBracket(decimal annualIncome, decimal? fromValue, decimal? toValue, decimal? rateCalValue)
         {
-            decimal taxToPayCalculated = 0;
-            decimal? bracketAmount = 0;
-            decimal? bracketTaxAmount = 0;
-
-            if (annualIncome > toValue)
+            try
             {
-                // Calculate Tax For Full Bracket
-                bracketAmount = toValue - (fromValue == 0 ? 0 : (fromValue - 1));
-                bracketTaxAmount = bracketAmount * rateCalValue;
+                decimal taxToPayCalculated = 0;
+                decimal? bracketAmount = 0;
+                decimal? bracketTaxAmount = 0;
 
-                taxToPayCalculated = (decimal)(taxToPayCalculated + bracketTaxAmount);
+                if (annualIncome > toValue)
+                {
+                    // Calculate Tax For Full Bracket
+                    bracketAmount = toValue - (fromValue == 0 ? 0 : (fromValue - 1));
+                    bracketTaxAmount = bracketAmount * rateCalValue;
+
+                    taxToPayCalculated = (decimal)(taxToPayCalculated + bracketTaxAmount);
+                    return taxToPayCalculated;
+                }
+
+                if (annualIncome >= fromValue && annualIncome <= toValue)
+                {
+                    bracketAmount = annualIncome - (fromValue == 0 ? 0 : (fromValue - 1));
+                    bracketTaxAmount = bracketAmount * rateCalValue;
+
+                    taxToPayCalculated = (decimal)(taxToPayCalculated + bracketTaxAmount);
+                    return taxToPayCalculated;
+                }
+
+                if (toValue == null && annualIncome >= fromValue)
+                {
+                    bracketAmount = annualIncome - (fromValue == 0 ? 0 : (fromValue - 1));
+                    bracketTaxAmount = bracketAmount * rateCalValue;
+
+                    taxToPayCalculated = (decimal)(taxToPayCalculated + bracketTaxAmount);
+                    return taxToPayCalculated;
+                }
+
+
                 return taxToPayCalculated;
             }
-
-            if (annualIncome >= fromValue && annualIncome <= toValue)
+            catch (Exception)
             {
-                bracketAmount = annualIncome - (fromValue == 0 ? 0 : (fromValue - 1));
-                bracketTaxAmount = bracketAmount * rateCalValue;
 
-                taxToPayCalculated = (decimal)(taxToPayCalculated + bracketTaxAmount);
-                return taxToPayCalculated;
+                throw;
             }
-
-            if (toValue == null && annualIncome >= fromValue)
-            {
-                bracketAmount = annualIncome - (fromValue == 0 ? 0 : (fromValue - 1));
-                bracketTaxAmount = bracketAmount * rateCalValue;
-
-                taxToPayCalculated = (decimal)(taxToPayCalculated + bracketTaxAmount);
-                return taxToPayCalculated;
-            }
-
-
-            return taxToPayCalculated;
+            
         }
     }
 }
