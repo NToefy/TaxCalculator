@@ -169,6 +169,8 @@ namespace TaxCalculator.Repositories
                             response.message = "Tax calculation performed successfully.";
                             response.taxValue = taxToPay;
                             response.typeOfCalculation = "Flat Rate";
+                            response.totalAfterTax = annualIncome - taxToPay;
+                            response.totalTaxPercentage = (taxToPay / annualIncome) * 100;
                         }
                         else
                         {
@@ -176,6 +178,8 @@ namespace TaxCalculator.Repositories
                             response.message = "Error saving result to the database.";
                             response.taxValue = taxToPay;
                             response.typeOfCalculation = "Flat Rate";
+                            response.totalAfterTax = annualIncome - taxToPay;
+                            response.totalTaxPercentage = (taxToPay / annualIncome) * 100;
                         }
 
 
@@ -214,6 +218,8 @@ namespace TaxCalculator.Repositories
                             response.message = "Tax calculation performed successfully.";
                             response.taxValue = taxToPay;
                             response.typeOfCalculation = "Flat Value";
+                            response.totalAfterTax = annualIncome - taxToPay;
+                            response.totalTaxPercentage = (taxToPay / annualIncome) * 100;
                         }
                         else
                         {
@@ -221,6 +227,8 @@ namespace TaxCalculator.Repositories
                             response.message = "Error saving result to the database.";
                             response.taxValue = taxToPay;
                             response.typeOfCalculation = "Flat Value";
+                            response.totalAfterTax = annualIncome - taxToPay;
+                            response.totalTaxPercentage = (taxToPay / annualIncome) * 100;
                         }
 
                         break;
@@ -261,6 +269,8 @@ namespace TaxCalculator.Repositories
                                 response.message = "Tax calculation performed successfully.";
                                 response.taxValue = taxToPay;
                                 response.typeOfCalculation = "Progressive";
+                                response.totalAfterTax = annualIncome - taxToPay;
+                                response.totalTaxPercentage = (taxToPay / annualIncome) * 100;
                             }
                             else
                             {
@@ -268,6 +278,8 @@ namespace TaxCalculator.Repositories
                                 response.message = "Error saving result to the database.";
                                 response.taxValue = taxToPay;
                                 response.typeOfCalculation = "Progressive";
+                                response.totalAfterTax = annualIncome - taxToPay;
+                                response.totalTaxPercentage = (taxToPay / annualIncome) * 100;
                             }
 
                         }
@@ -294,6 +306,8 @@ namespace TaxCalculator.Repositories
                 responseError.message = ex.Message;
                 responseError.taxValue = 0;
                 responseError.typeOfCalculation = "None";
+                responseError.totalAfterTax = 0;
+                responseError.totalTaxPercentage = 0;
 
                 return responseError;
             }

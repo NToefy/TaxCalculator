@@ -11,5 +11,7 @@ namespace TaxCalculator.Models
         public string message { get; set; }
         public decimal taxValue { get; set; }
         public string typeOfCalculation { get; set; }
+        public decimal totalAfterTax { get; set; }
+        public decimal totalTaxPercentage { get; set; }
     }
 }
