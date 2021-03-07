@@ -24,10 +24,11 @@ namespace TaxCalculatorTests
         public async Task TestGetAllRateLookups()
         {
             //rateValues = taxCalculatorRepository.Setup(a => a.GetAllRateLookupsAsync().Result).Returns(rateValues);
-            var mockUnit = new Mock<TaxCalculator.Repositories.ITaxCalculatorRepository>();
-            mockUnit.Setup(x => x.GetAllRateLookupsAsync()).ReturnsAsync(rateValues);
-
-            Assert.IsTrue(rateValues.Count > 0);
+            //var mockUnit = new Mock<TaxCalculator.Repositories.ITaxCalculatorRepository>();
+            //mockUnit.Setup(x => x.GetAllRateLookupsAsync()).ReturnsAsync(rateValues);
+            //var taxrep = new Mock<TaxCalculator.Repositories.TaxCalculatorRepository>();
+            //var test = taxrep.Setup(a => a.GetAllRateLookupsAsync().ConfigureAwait(true).GetAwaiter().GetResult());
+            //Assert.IsTrue(test.Returns(rateValues) > 0);
         }
     }
 }
