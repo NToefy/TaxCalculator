@@ -39,23 +39,7 @@ namespace TaxCalculator.Controllers
         public IActionResult CalculateTax(string postalCode, decimal annualIncome)
         //public IActionResult CalculateTax([FromBody] PostParamsDTO requestData)
         {
-            // Get values from form
 
-            // Validate values
-
-            // Include Exception handling
-
-            // Set initial value
-
-            // Get postalLookup data based on postal code. pass through postal code to lookup. Not get all
-
-            // Get full lookup from rates lookup. Calculation to be based on all rows of rates lookup
-
-            //var postalCode = requestData.postalCode;
-            //var annualIncome = requestData.annualIncome;
-
-            //var postalCode = requestData.Value<string>("postalCode");
-            //var annualIncome = requestData.Value<decimal>("annualIncome");
             try
             {
                 string url = "http://localhost:49991/api/Tax";
@@ -89,10 +73,10 @@ namespace TaxCalculator.Controllers
                 ViewBag.AnnualIncome = string.Format("Annual Income : {0}", annualIncome);
                 ViewBag.Status = string.Format("Status : {0}", responseVal.status);
                 ViewBag.Message = string.Format("Message : {0}", responseVal.message);
-                ViewBag.TaxValue = string.Format("Tax Value : {0}", responseVal.taxValue);
+                ViewBag.TaxValue = string.Format("Tax Value : {0:0.##}", responseVal.taxValue);
                 ViewBag.CalcType = string.Format("Type Of Calculation : {0}", responseVal.typeOfCalculation ?? "None");
-                ViewBag.TotalAfterTax = string.Format("Total After Tax : {0}", responseVal.totalAfterTax);
-                ViewBag.TotalTaxPercentage = string.Format("Total Tax Percentage : {0} %", responseVal.totalTaxPercentage);
+                ViewBag.TotalAfterTax = string.Format("Total After Tax : {0:0.##}", responseVal.totalAfterTax);
+                ViewBag.TotalTaxPercentage = string.Format("Total Tax Percentage : {0:0.##} %", responseVal.totalTaxPercentage);
                 return View("Index");
             }
             catch (Exception ex)
