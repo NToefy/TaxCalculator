@@ -7,14 +7,13 @@ using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using TaxCalculator.Models;
-using TaxCalculator.BusinessClasses;
 
 namespace TaxCalculator.Repositories
 {
     public class TaxCalculatorRepository : ITaxCalculatorRepository
     {
         private string DBContextConnection = string.Empty;
-        private readonly TaxCalculatorBusiness _taxCalculatorBusiness;
+
 
         private IDbConnection Connection
         {
@@ -30,7 +29,6 @@ namespace TaxCalculator.Repositories
             {
                //DBContextConnection = configuration.GetConnectionString("DBContextConnectio"); //Simulate incorrect connection
                 DBContextConnection = configuration.GetConnectionString("DBContextConnection");
-                _taxCalculatorBusiness = new TaxCalculatorBusiness(configuration);
             }
             catch (Exception)
             {
@@ -110,19 +108,12 @@ namespace TaxCalculator.Repositories
         {
             try
             {
-                //using (IDbConnection conn = Connection)
-                //{
-                //    string query = "SELECT * FROM PostalLookup WHERE PostalCode = @postalCode";
-                //    PostalLookupDTO postalLookup = await conn.QueryFirstOrDefaultAsync<PostalLookupDTO>(sql: query, param: new { postalCode });
-                //    return postalLookup;
-                //}
-
-                PostalLookupDTO rateLookupResponse = new PostalLookupDTO();
-
-                rateLookupResponse = await _taxCalculatorBusiness.FetchTaxRateDescriptor(postalCode);
-
-                return rateLookupResponse;
-
+                using (IDbConnection conn = Connection)
+                {
+                    string query = "SELECT * FROM PostalLookup WHERE PostalCode = @postalCode";
+                    PostalLookupDTO postalLookup = await conn.QueryFirstOrDefaultAsync<PostalLookupDTO>(sql: query, param: new { postalCode });
+                    return postalLookup;
+                }
             }
             catch (Exception)
             {
