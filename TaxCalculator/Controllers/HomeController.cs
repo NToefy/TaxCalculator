@@ -11,6 +11,7 @@ using RestSharp;
 using Nancy.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using TaxCalculator.Helpers;
 
 namespace TaxCalculator.Controllers
 {
@@ -42,7 +43,8 @@ namespace TaxCalculator.Controllers
 
             try
             {
-                string url = "http://localhost:49991/api/Tax";
+                //string url = "http://localhost:49991/api/Tax";
+                string url = HelperSettings.APIBaseUrl;
 
                 var input = new PostParamsDTO
                 {

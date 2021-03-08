@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TaxCalculator.Repositories;
 using Newtonsoft;
+using TaxCalculator.Helpers;
 
 namespace TaxCalculator
 {
@@ -39,6 +40,9 @@ namespace TaxCalculator
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            HelperSettings.APIBaseUrl = Configuration.GetSection("APIBaseUrl").Value;
+
             app.UseStaticFiles();
 
             app.UseRouting();

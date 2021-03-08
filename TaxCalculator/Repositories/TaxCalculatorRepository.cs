@@ -69,7 +69,7 @@ namespace TaxCalculator.Repositories
                     return rateLookups;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;
